@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineMatch | Descubra, Pesquise e Favorite Filmes</title>
+    <style>
+        :root {
+            --bg-color: #141414;
+            --card-bg: #1f1f1f;
+            --primary: #e50914;
+            --primary-hover: #b20710;
+            --text-main: #ffffff;
+            --text-muted: #b3b3b3;
+            --accent: #46d369;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: rgba(20, 20, 20, 0.95);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 5%;
+            border-bottom: 1px solid #282828;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary);
+            text-decoration: none;
+            letter-spacing: 1px;
+        }
+
+        .logo span {
+            color: var(--text-main);
+        }
+
+        /* Barra de Pesquisa no Header */
+        .search-container {
+            display: flex;
+            align-items: center;
+            background-color: #222;
+            border-radius: 6px;
+            padding: 0.4rem 0.8rem;
+            border: 1px solid #333;
+        }
+
+        .search-container input {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 0.95rem;
+            outline: none;
+            width: 200px;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        nav a:hover, nav a.active {
+            color: var(--text-main);
+        }
+
+        .badge-fav {
+            background-color: var(--primary);
+            color: white;
+            padding: 0.1rem 0.5rem;
+            border-radius: 10px;
+            font-size: 0.8rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(20,20,20,0.3), rgba(20,20,20,1)), url('https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=1200&q=80') no-repeat center center/cover;
+            padding: 6rem 5% 4rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .hero span.tag {
+            background-color: var(--primary);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin: 1rem 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin-bottom: 2rem;
+        }
+
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: background 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        /* Container Principal */
+        .container {
+            max-width: 1400px;
+            margin: 3rem auto;
+            padding: 0 5%;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            border-left: 4px solid var(--primary);
+            padding-left: 0.8rem;
+        }
+
+        /* Grid de Mídia */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 2rem;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+        }
+
+        .card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+
+        .card img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+
+        .card-content {
+            padding: 1rem;
+        }
+
+        .card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .match-score {
+            color: var(--accent);
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .card p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Botão de Favoritar */
+        .fav-btn {
+            background: rgba(0, 0, 0, 0.7);
+            border: none;
+            color: white;
+            padding: 0.5rem 0.8rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: bold;
+            transition: background 0.3s;
+            width: 100%;
+        }
+
+        .fav-btn.favorited {
+            background-color: var(--primary);
+        }
+
+        /* Seção de Avaliação Interativa */
+        .review-section {
+            background-color: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 12px;
+            margin-top: 4rem;
+            border: 1px solid #282828;
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            background-color: #141414;
+            border: 1px solid #333;
+            color: white;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #0b0b0b;
+            text-align: center;
+            padding: 2.5rem;
+            color: var(--text-muted);
+            border-top: 1px solid #282828;
+            margin-top: 4rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header com Pesquisa -->
+    <header>
+        <a href="#" class="logo">Cine<span>Match</span></a>
+        
+        <div class="search-container">
+            <span style="margin-right: 8px;">🔍</span>
+            <input type="text" id="searchInput" placeholder="Pesquisar filme ou série..." onkeyup="filtrarFilmes()">
+        </div>
+
+        <nav>
+            <ul>
+                <li><a href="#" class="active">Início</a></li>
+                <li><a href="#catalogo">Catálogo</a></li>
+                <li><a href="#avaliar">Avaliar</a></li>
+                <li><a href="#favoritos">❤️ Favoritos <span id="favCount" class="badge-fav">0</span></a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero Banner -->
+    <section class="hero">
+        <span class="tag">Em Destaque Hoje</span>
+        <h1>Além do Horizonte</h1>
+        <p>Em uma jornada épica rumo aos confins da galáxia, uma tripulação descobre um segredo que pode mudar o destino da humanidade para sempre.</p>
+        <button class="btn" onclick="alert('Iniciando trailer...')">▶ Assistir Trailer</button>
+    </section>
+
+    <!-- Catálogo de Filmes -->
+    <main class="container" id="catalogo">
+        <h2 class="section-title">Recomendações e Catálogo</h2>
+        
+        <div class="grid" id="movieGrid">
+            <!-- Card 1 -->
+            <div class="card" data-title="cyber protocol">
+                <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=500&q=80" alt="Cyber Protocol">
+                <div class="card-content">
+                    <h3>Cyber Protocol</h3>
+                    <div class="match-score">⭐ 98% Match</div>
+                    <p>Ficção Científica • 2026</p>
+                    <button class="fav-btn" onclick="toggleFavorito(this, 'Cyber Protocol')">🤍 Favoritar</button>
+                </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="card" data-title="o último reino">
+                <img src="https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=500&q=80" alt="O Último Reino">
+                <div class="card-content">
+                    <h3>O Último Reino</h3>
+                    <div class="match-score">⭐ 95% Match</div>
+                    <p>Fantasia Épica • 2025</p>
+                    <button class="fav-btn" onclick="toggleFavorito(this, 'O Último Reino')">🤍 Favoritar</button>
+                </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="card" data-title="mistério em alto mar">
+                <img src="https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=500&q=80" alt="Mistério em Alto Mar">
+                <div class="card-content">
+                    <h3>Mistério em Alto Mar</h3>
+                    <div class="match-score">⭐ 91% Match</div>
+                    <p>Suspense • 2026</p>
+                    <button class="fav-btn" onclick="toggleFavorito(this, 'Mistério em Alto Mar')">🤍 Favoritar</button>
+                </div>
+            </div>
+
+            <!-- Card 4 -->
+            <div class="card" data-title="sorriso artificial">
+                <img src="https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=500&q=80" alt="Sorriso Artificial">
+                <div class="card-content">
+                    <h3>Sorriso Artificial</h3>
+                    <div class="match-score">⭐ 89% Match</div>
+                    <p>Drama • 2024</p>
+                    <button class="fav-btn" onclick="toggleFavorito(this, 'Sorriso Artificial')">🤍 Favoritar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção de Avaliação -->
+        <section class="review-section" id="avaliar">
+            <h2 class="section-title">Deixe sua Avaliação</h2>
+            <form onsubmit="event.preventDefault(); alert('Sua avaliação foi publicada com sucesso!');">
+                <div class="form-group">
+                    <label for="titulo-filme">Filme ou Série:</label>
+                    <input type="text" id="titulo-filme" required placeholder="Ex: Cyber Protocol">
+                </div>
+                <div class="form-group">
+                    <label for="nota">Nota (1 a 5 estrelas):</label>
+                    <select id="nota" required>
+                        <option value="">Selecione uma nota</option>
+                        <option value="5">⭐⭐⭐⭐⭐ (Excelente)</option>
+                        <option value="4">⭐⭐⭐⭐ (Muito Bom)</option>
+                        <option value="3">⭐⭐⭐ (Bom)</option>
+                        <option value="2">⭐⭐ (Regular)</option>
+                        <option value="1">⭐ (Ruim)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="comentario">Sua Crítica:</label>
+                    <textarea id="comentario" rows="4" placeholder="O que você achou da atuação, trilha sonora e enredo?"></textarea>
+                </div>
+                <button type="submit" class="btn">Publicar Avaliação</button>
+            </form>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 CineMatch. Plataforma fictícia de streaming e recomendações.</p>
+    </footer>
+
+    <script>
+        // Função de Pesquisa em Tempo Real
+        function filtrarFilmes() {
+            let input = document.getElementById('searchInput').value.toLowerCase();
+            let cards = document.getElementsByClassName('card');
+
+            for (let i = 0; i < cards.length; i++) {
+                let titulo = cards[i].getAttribute('data-title');
+                if (titulo.includes(input)) {
+                    cards[i].style.display = "";
+                } else {
+                    cards[i].style.display = "none";
+                }
+            }
+        }
+
+        // Sistema de Favoritos
+        let favoritosCount = 0;
+
+        function toggleFavorito(button, nomeFilme) {
+            button.classList.toggle('favorited');
+            
+            if (button.classList.contains('favorited')) {
+                button.innerHTML = '❤️ Favoritado';
+                favoritosCount++;
+                alert(`"${nomeFilme}" foi adicionado aos seus favoritos!`);
+            } else {
+                button.innerHTML = '🤍 Favoritar';
+                favoritosCount--;
+                alert(`"${nomeFilme}" foi removido dos favoritos.`);
+            }
+
+            document.getElementById('favCount').innerText = favoritosCount;
+        }
+    </script>
+</body>
+</html>
